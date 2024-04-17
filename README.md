@@ -8,6 +8,8 @@ Few things to notice before trying the project:
 - I could have made another interface for custom serialzing of json, thus making the system a bit more flexable. 
 - I also could have added a queue for the SaveManager class for more scalability but that was out of the scope.
 
+Link for my small tech design : https://miro.com/app/board/uXjVKTwlmtw=/?share_link_id=572106810200](https://miro.com/app/board/uXjVKTwlmtw=/?share_link_id=608992860663)
+
 Overall I had a great time and learned alot. 
 If there are any questions about the project please feel free to contact me! 
 
