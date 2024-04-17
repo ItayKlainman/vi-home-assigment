@@ -1,26 +1,27 @@
 using Firebase.Database;
 using UnityEngine.Device;
-using System.Threading.Tasks;
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 public class CloudSaveService : ISaveData
 {
-    private DatabaseReference reference;
-    private string id;
+    private DatabaseReference dbRef;
 
-    public CloudSaveService()
-    { 
-        reference = FirebaseDatabase.GetInstance("https://vi-home-assignment-default-rtdb.europe-west1.firebasedatabase.app").RootReference;
-        id = SystemInfo.deviceUniqueIdentifier;
+    private readonly string userID = SystemInfo.deviceUniqueIdentifier;
+    private readonly string parentObjectID = "users";
+
+    public CloudSaveService(FirebaseDatabase firebaseDatabase)
+    {
+        dbRef = firebaseDatabase.RootReference;
     }
 
     public async void Save(ISavableData saveData)
     {
-        var saveDataID = saveData.GetType().Name;  //SaveID
-        var json = UnityEngine.JsonUtility.ToJson(saveData);
+        var saveDataID = saveData.GetType().Name;
+        var serializedData = Serialize(saveData);
 
-        await reference.Child("players").Child(id).Child(saveDataID).SetRawJsonValueAsync(json).ContinueWith(task => {
+        await dbRef.Child(parentObjectID).Child(userID).Child(saveDataID).SetRawJsonValueAsync(serializedData).ContinueWith(task => {
 
             if(task.IsCompletedSuccessfully)
             {
@@ -28,36 +29,67 @@ public class CloudSaveService : ISaveData
                 return;
             }
 
-            foreach (var execption in task.Exception.InnerExceptions)
+            else
             {
-                Debug.WriteLine($"Failed to load data {saveDataID}. reason: {execption.Message}");
-                //handle exeptions here. also encapsulate and clean up for load function.
+                HandleFailedRequest(task, $"Failed to load data of type {saveDataID}");
             }
         });
     }
 
     public void Load<T>(Action<T> onComplete) where T : ISavableData
     {
-       reference.Child("players").Child(id).GetValueAsync().ContinueWith(task => {
+        var loadDataID = typeof(T).Name;
 
-        if(task.IsCompletedSuccessfully)
+        dbRef.Child(parentObjectID).Child(userID).Child(loadDataID).GetValueAsync().ContinueWith(task => {
+
+            if(task.IsCompletedSuccessfully)
             {
-               var rawJson = task.Result.GetRawJsonValue();
-               var deserializedData = UnityEngine.JsonUtility.FromJson<T>(rawJson);
-
-               onComplete.Invoke(deserializedData);
-
-               return;
-           }
-           else
-           {
-               foreach (var execption in task.Exception.InnerExceptions)
-               {
-                   //handle exeptions here. also encapsulate and clean up for save function.
-               }
-           }
-         });
+                onLoadSuccessful(onComplete, task, loadDataID);
+                return;
+            }
+            else
+            {
+                HandleFailedRequest(task, $"Failed to load data of type {loadDataID}");
+            }
+        });
     }
 
+    private void onLoadSuccessful<T>(Action<T> onComplete, Task<DataSnapshot> task, string loadedDataType) where T : ISavableData
+    {
+        var rawJson = task.Result.GetRawJsonValue();
+        var deserializedData = Deserialize<T>(rawJson);
 
+        onComplete.Invoke(deserializedData);
+
+        Debug.WriteLine($"Loaded data of type {loadedDataType} successfully.");
+    }
+
+    private void HandleFailedRequest(Task task, string failedMessage)
+    {
+        if (task.IsFaulted)
+        {
+            foreach (var exception in task.Exception.InnerExceptions)
+            {
+                Debug.WriteLine($"Error: {exception.Message}");
+            }
+        }
+        else if (task.IsCanceled)
+        {
+            Debug.WriteLine("Operation canceled.");
+        }
+
+        Debug.WriteLine(failedMessage);
+    }
+
+    private string Serialize(ISavableData data)
+    {
+        // Implement serialization logic here
+        return UnityEngine.JsonUtility.ToJson(data);
+    }
+
+    private T Deserialize<T>(string json)
+    {
+        // Implement deserialization logic here
+        return UnityEngine.JsonUtility.FromJson<T>(json);
+    }
 }

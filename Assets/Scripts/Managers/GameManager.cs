@@ -4,7 +4,7 @@ using TMPro;
 public class GameManager : MonoBehaviour
 {
     public TMP_InputField InputField;
-    public TextMeshProUGUI Level;
+    public TextMeshProUGUI LevelText;
     public GameObject saveIcon;
     private int counter;
 
@@ -26,7 +26,6 @@ public class GameManager : MonoBehaviour
 
     public void OnLevelUpPressed()
     {
-        counter++;
          SaveManager.SaveData(new PlayerData(counter, InputField.text));
     }
 
@@ -42,6 +41,6 @@ public class GameManager : MonoBehaviour
         playerData = data;
 
         InputField.text = playerData.Name;
-        Level.SetText(playerData.Level.ToString());
+        LevelText.text = $"Level: {data.Level}";
     }
 }
