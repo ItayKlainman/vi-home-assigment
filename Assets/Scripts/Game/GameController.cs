@@ -12,6 +12,7 @@ namespace Controllers
         [SerializeField] private GameObject SaveIcon;
 
         private PlayerData playerData;
+        private const string DATA_KEY = "player_data";
 
         private void Start()
         {
@@ -24,7 +25,7 @@ namespace Controllers
 
             playerData = new PlayerData(1, InputField.text);
 
-            SaveManager.SaveData(playerData);
+            SaveManager.SaveData(playerData, DATA_KEY);
 
             SaveIcon.SetActive(false);
 
@@ -34,13 +35,13 @@ namespace Controllers
         public void OnLevelUpPressed()
         {
             playerData = new PlayerData(playerData.Level + 1, playerData.Name);
-            SaveManager.SaveData(playerData);
+            SaveManager.SaveData(playerData, DATA_KEY);
             SetView();
         }
 
         public void TryLoadData()
         {
-            SaveManager.LoadData<PlayerData>((data) =>
+            SaveManager.LoadData<PlayerData>(DATA_KEY, (data) =>
             {
                 playerData = data ?? new PlayerData(0, "");
                 SetView();
@@ -49,12 +50,7 @@ namespace Controllers
 
         private void SetView()
         {
-            if(playerData == null)
-            {
-                Debug.Log("playerdata is null");
-            }
-
-            playerName.SetText(playerData.Name);
+            playerName.SetText($"Player: {playerData.Name}");
             LevelText.text = $"Level: {playerData.Level}";
         }
     }

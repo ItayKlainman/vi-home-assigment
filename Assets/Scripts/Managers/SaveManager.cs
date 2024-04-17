@@ -8,14 +8,14 @@ namespace Managers
     {
         private static ISaveData saveService = new CloudSaveService();
 
-        public static void SaveData<T>(T data) where T: class
+        public static void SaveData<T>(T data,string key) where T: class
         {
-            saveService.Save(data);
+            saveService.Save(data, key);
         }
 
-        public static void LoadData<T>(Action<T> OnCompleteLoad)
+        public static void LoadData<T>(string key, Action<T> OnCompleteLoad)
         {
-           saveService.Load(OnCompleteLoad);
+           saveService.Load(key, OnCompleteLoad);
         }
     }
 }

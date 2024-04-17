@@ -4,8 +4,8 @@ namespace Interfaces
 {
     public interface ISaveData
     {
-        void Save<T>(T data) where T : class;
+        void Save<T>(T data, string key) where T : class;
 
-        void Load<T>(Action<T> onComplete);
+        void Load<T>(string key, Action<T> onComplete);
     }
 }

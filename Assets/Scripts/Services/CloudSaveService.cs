@@ -10,37 +10,47 @@ namespace Services
     {
         private DatabaseReference dbRef;
 
+        private const string PARENT_OBJECT_ID = "users";
+        private const string DB_URL = "https://vi-home-assignment-default-rtdb.europe-west1.firebasedatabase.app/";
         private readonly string userID = SystemInfo.deviceUniqueIdentifier;
-        private readonly string parentObjectID = "users";
 
         public CloudSaveService()
         {
-            dbRef = FirebaseDatabase.GetInstance("https://vi-home-assignment-default-rtdb.europe-west1.firebasedatabase.app/").RootReference;
+            dbRef = FirebaseDatabase.GetInstance(DB_URL).RootReference;
         }
 
-        public async void Save<T>(T saveData) where T : class
+        public async void Save<T>(T saveData, string key) where T : class
         {
-            var saveDataID = typeof(T).Name;
+            if (string.IsNullOrEmpty(key))
+            {
+                Debug.LogError("Data key was not provided.");
+                return;
+            }
+
             var serializedData = Serialize(saveData);
 
-            await dbRef.Child(parentObjectID).Child(userID).Child(saveDataID).SetRawJsonValueAsync(serializedData).ContinueWith(task =>
+            await dbRef.Child(PARENT_OBJECT_ID).Child(userID).Child(key).SetRawJsonValueAsync(serializedData).ContinueWith(task =>
             {
                 if (task.IsCompletedSuccessfully)
                 {
-                    Debug.Log($"Loaded data of type {saveDataID} successfully.");
+                    Debug.Log($"Loaded data of type {key} successfully.");
                 }
                 else
                 {
-                    HandleFailedRequest(task, $"Failed to save data of type {saveDataID}");
+                    HandleFailedRequest(task, $"Failed to save data of type {key}");
                 }
             });
         }
 
-        public void Load<T>(Action<T> onComplete)
+        public void Load<T>(string key, Action<T> onComplete)
         {
-            var loadDataID = typeof(T).Name;
+            if (string.IsNullOrEmpty(key))
+            {
+                Debug.LogError("Data key was not provided.");
+                return;
+            }
 
-             dbRef.Child(parentObjectID).Child(userID).Child(loadDataID).GetValueAsync().ContinueWith(task =>
+            dbRef.Child(PARENT_OBJECT_ID).Child(userID).Child(key).GetValueAsync().ContinueWith(task =>
             {
                 if (task.IsCompletedSuccessfully)
                 {
@@ -48,11 +58,11 @@ namespace Services
                     var deserializedData = Deserialize<T>(rawJson);
 
                     onComplete.Invoke(deserializedData);
-                    Debug.Log($"Loaded data of type {loadDataID} successfully.");
+                    Debug.Log($"Loaded data of type {key} successfully.");
                 }
                 else
                 {
-                    HandleFailedRequest(task, $"Failed to load data of type {loadDataID}");
+                    HandleFailedRequest(task, $"Failed to load data of type {key}");
                 }
             });
         }
