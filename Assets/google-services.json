@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "138753795725",
+    "firebase_url": "https://vi-home-assignment-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "vi-home-assignment",
+    "storage_bucket": "vi-home-assignment.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:138753795725:android:23ee690bde4dfc1fb7a4c4",
+        "android_client_info": {
+          "package_name": "itay.vi.home.assignment"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArQsHAmXubmPSwUDtDl4hFosb-8mvRlGI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

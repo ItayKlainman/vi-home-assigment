@@ -1,13 +1,15 @@
 using UnityEngine;
 using TMPro;
+using Managers;
 
-namespace Managers
+namespace Controllers
 {
-    public class GameManager : MonoBehaviour
+    public class GameController : MonoBehaviour
     {
-        public TMP_InputField InputField;
-        public TextMeshProUGUI LevelText;
-        public GameObject SaveIcon;
+        [SerializeField] private TMP_InputField InputField;
+        [SerializeField] private TextMeshProUGUI LevelText;
+        [SerializeField] private TextMeshProUGUI playerName; 
+        [SerializeField] private GameObject SaveIcon;
 
         private PlayerData playerData;
 
@@ -25,10 +27,14 @@ namespace Managers
             SaveManager.SaveData(playerData);
 
             SaveIcon.SetActive(false);
+
+            SetView();
         }
 
         public void OnLevelUpPressed()
         {
+            playerData = new PlayerData(playerData.Level + 1, playerData.Name);
+            SaveManager.SaveData(playerData);
             SetView();
         }
 
@@ -36,21 +42,19 @@ namespace Managers
         {
             SaveManager.LoadData<PlayerData>((data) =>
             {
-
-                playerData = data;
-                //if load successful remove the input text registertion
-                if (playerData == null)
-                {
-                    playerData = new PlayerData(0, " ");
-                }
+                playerData = data ?? new PlayerData(0, "");
+                SetView();
             });
-
-            SetView();
         }
 
         private void SetView()
         {
-            InputField.text = playerData.Name;
+            if(playerData == null)
+            {
+                Debug.Log("playerdata is null");
+            }
+
+            playerName.SetText(playerData.Name);
             LevelText.text = $"Level: {playerData.Level}";
         }
     }

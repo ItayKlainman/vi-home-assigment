@@ -6,6 +6,6 @@ namespace Interfaces
     {
         void Save<T>(T data) where T : class;
 
-        void Load<T>(Action<T> onComplete, Func<T> createDefault = null);
+        void Load<T>(Action<T> onComplete);
     }
 }

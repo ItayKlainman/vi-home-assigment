@@ -7,17 +7,16 @@ namespace Managers
 {
     public static class SaveManager
     {
-        private static readonly ISaveData saveService = new CloudSaveService(FirebaseDatabase.GetInstance("https://vi-home-assignment-default-rtdb.europe-west1.firebasedatabase.app"));
+        private static ISaveData saveService = new CloudSaveService();
 
-        public static void SaveData(object data)
+        public static void SaveData<T>(T data) where T: class
         {
             saveService.Save(data);
         }
 
         public static void LoadData<T>(Action<T> OnCompleteLoad)
         {
-            saveService.Load<T>(OnCompleteLoad);
-            //need to handle case where data cannot be loaded. 
+            saveService.Load(OnCompleteLoad);
         }
     }
 }
