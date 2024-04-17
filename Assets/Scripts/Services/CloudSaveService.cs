@@ -50,7 +50,7 @@ namespace Services
                 return;
             }
 
-            dbRef.Child(PARENT_OBJECT_ID).Child(userID).Child(key).GetValueAsync().ContinueWith(task =>
+             dbRef.Child(PARENT_OBJECT_ID).Child(userID).Child(key).GetValueAsync().ContinueWith(task =>
             {
                 if (task.IsCompletedSuccessfully)
                 {
