@@ -40,7 +40,7 @@ namespace Services
         {
             var loadDataID = typeof(T).Name;
 
-            dbRef.Child(parentObjectID).Child(userID).Child(loadDataID).GetValueAsync().ContinueWith(task =>
+             dbRef.Child(parentObjectID).Child(userID).Child(loadDataID).GetValueAsync().ContinueWith(task =>
             {
                 if (task.IsCompletedSuccessfully)
                 {

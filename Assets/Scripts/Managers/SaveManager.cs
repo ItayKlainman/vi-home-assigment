@@ -1,4 +1,3 @@
-using Firebase.Database;
 using System;
 using Services;
 using Interfaces;
@@ -16,7 +15,7 @@ namespace Managers
 
         public static void LoadData<T>(Action<T> OnCompleteLoad)
         {
-            saveService.Load(OnCompleteLoad);
+           saveService.Load(OnCompleteLoad);
         }
     }
 }
