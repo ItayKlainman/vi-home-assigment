@@ -1,18 +1,23 @@
 using Firebase.Database;
 using System;
+using Services;
+using Interfaces;
 
-public static class SaveManager
+namespace Managers
 {
-    private static readonly ISaveData saveService = new CloudSaveService(FirebaseDatabase.GetInstance("https://vi-home-assignment-default-rtdb.europe-west1.firebasedatabase.app"));
-
-    public static void SaveData(ISavableData data)
+    public static class SaveManager
     {
-       saveService.Save(data);
-    }
+        private static readonly ISaveData saveService = new CloudSaveService(FirebaseDatabase.GetInstance("https://vi-home-assignment-default-rtdb.europe-west1.firebasedatabase.app"));
 
-    public static void LoadData<T>(Action<T> OnCompleteLoad) where T: ISavableData
-    {
-       saveService.Load<T>(OnCompleteLoad);
-        //need to handle case where data cannot be loaded. 
+        public static void SaveData(object data)
+        {
+            saveService.Save(data);
+        }
+
+        public static void LoadData<T>(Action<T> OnCompleteLoad)
+        {
+            saveService.Load<T>(OnCompleteLoad);
+            //need to handle case where data cannot be loaded. 
+        }
     }
 }

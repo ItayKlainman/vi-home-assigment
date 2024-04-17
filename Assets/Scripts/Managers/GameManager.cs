@@ -1,46 +1,57 @@
 using UnityEngine;
 using TMPro;
 
-public class GameManager : MonoBehaviour
+namespace Managers
 {
-    public TMP_InputField InputField;
-    public TextMeshProUGUI LevelText;
-    public GameObject saveIcon;
-    private int counter;
-
-    private PlayerData playerData;
-
-    private void Start()
+    public class GameManager : MonoBehaviour
     {
-        //SaveManager.LoadData<PlayerData>(SetView);    
-    }
+        public TMP_InputField InputField;
+        public TextMeshProUGUI LevelText;
+        public GameObject SaveIcon;
 
-    public void OnDonePressed()
-    {
-        saveIcon.SetActive(true);
+        private PlayerData playerData;
 
-        SaveManager.SaveData(new PlayerData(counter, InputField.text));
+        private void Start()
+        {
+            TryLoadData();
+        }
 
-        saveIcon.SetActive(false);
-    }
+        public void OnDonePressed()
+        {
+            SaveIcon.SetActive(true);
 
-    public void OnLevelUpPressed()
-    {
-         SaveManager.SaveData(new PlayerData(counter, InputField.text));
-    }
+            playerData = new PlayerData(1, InputField.text);
 
-    public void TestLoad()
-    {
-        playerData = new PlayerData(0," ");
+            SaveManager.SaveData(playerData);
 
-        SaveManager.LoadData<PlayerData>(SetView);
-    }
+            SaveIcon.SetActive(false);
+        }
 
-    private void SetView(PlayerData data)
-    {
-        playerData = data;
+        public void OnLevelUpPressed()
+        {
+            SetView();
+        }
 
-        InputField.text = playerData.Name;
-        LevelText.text = $"Level: {data.Level}";
+        public void TryLoadData()
+        {
+            SaveManager.LoadData<PlayerData>((data) =>
+            {
+
+                playerData = data;
+                //if load successful remove the input text registertion
+                if (playerData == null)
+                {
+                    playerData = new PlayerData(0, " ");
+                }
+            });
+
+            SetView();
+        }
+
+        private void SetView()
+        {
+            InputField.text = playerData.Name;
+            LevelText.text = $"Level: {playerData.Level}";
+        }
     }
 }

@@ -1,6 +1,4 @@
-using UnityEngine;
-
-public class PlayerData : ISavableData
+public class PlayerData
 {
     public int Level;
     public string Name;

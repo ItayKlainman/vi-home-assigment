@@ -1,8 +1,11 @@
 using System;
 
-public interface ISaveData
+namespace Interfaces
 {
-    void Save(ISavableData data);
+    public interface ISaveData
+    {
+        void Save<T>(T data) where T : class;
 
-    void Load<T>(Action<T> onComplete) where T : ISavableData;
+        void Load<T>(Action<T> onComplete, Func<T> createDefault = null);
+    }
 }
